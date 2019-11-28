@@ -1,0 +1,52 @@
+---
+title: "codebook"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+`run_analysis.R` undertakes the steps required for the assignment, which are as follows:
+
+# 1) Merge the training and the test sets to create one data set
+Imported the feature names and activity labels data:  
+- features: `features.txt`  - list of all features  
+- activty_labels: `activity_labels.txt` - links the class labels with their activity name
+
+Imported the test and train data sets:  
+- subject_test: `subject_test.txt` - contains the subject identifier of the subject who carried out the experiment  
+- X_test: `X_test.txt`  - test data set  
+- y_test: `y_test.txt` - test labels  
+- subject_train: `subject_train.txt` - contains the subject identifier of the subject who carried out the experiment  
+- X_train: `X_train.txt`  - train data set  
+- y_train: `y_train.txt` - train labels
+
+Merged the subject, X and y data sets using `cbind()` to obtain `test_data` and `train_data`.  
+Added a 'data_type' column using `mutate` so you can distinguish between the 'train' and 'test' data  
+Merged `test_data` and `train_data` to using `rbind()` to obtain `merged_data`.
+
+# 2) Uses descriptive activity names to name the activities in the data set
+Used `left_join` to combine the `merged_data` and `activity_labels` data frames by the `activity_code` variable to obtain an updated version of `merged_data` that included the activity descriptions.
+
+# 3) Extracts only the measurements on the mean and standard deviation for each measurement
+Selected only the columns that represented 'means' or 'standard deviations' to create `selected_cols`. The 'activity' and 'subject_code' columns are also included in this selection.
+
+# 4) Appropriately label the data set with descriptive variable names
+Used `gsub` to replace the following column names with names with clearer descriptions:
+"Acc"           with   "_Acceleration_"  
+"Gyro"          with   "_Gyrometer_"  
+Start "t"       with   "Time_"  
+".tBody"        with   "_Time_Body"  
+Start "f"       with   "Frequency_"  
+"Mag"           with   "_Magnitude_"  
+".mean"         with   "Mean"  
+".std"          with   "STD"  
+"BodyBody"      with   "Body"  
+"freq"          with   "Frequency"  
+Start "angle"   with   "Angle"  
+"gravity"       with   "Gravity"  
+"__"            with   "_"
+
+# 5) From the data set in step 4, create a second, independent tidy data set with the average of each variable for each activity and each subject.
+Group `selected_cols` by 'subject_code' and 'activity' and calculate the means for each column using `summarise_all`. This tidy data set is saved as `data_means.txt` using `write.table`.
